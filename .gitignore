@@ -1,3 +1,6 @@
 env/
 .idea
 **/__pycache__/
+data/happy_people/*
+data/sad_people/*
+.DS_Store
