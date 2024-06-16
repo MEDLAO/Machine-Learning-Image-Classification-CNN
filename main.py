@@ -1,4 +1,4 @@
-# import tensorflow as tf
+import tensorflow as tf
 import os
 import cv2
 import imghdr
@@ -35,6 +35,6 @@ for image_class in os.listdir(data_dir):
             except Exception as e:
                 print('Issue with image {}'.format(image_path))
 
-
-
+# 2 - Load Data :
+tf.data.Dataset.list_files
 
