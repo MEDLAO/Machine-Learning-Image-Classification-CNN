@@ -3,6 +3,7 @@ import os
 import cv2
 import imghdr
 from matplotlib import pyplot as plt
+import numpy as np
 
 
 # Avoid OOM errors by setting GPU memory consumption growth
@@ -11,7 +12,8 @@ from matplotlib import pyplot as plt
 # for gpu in gpus:
 #     tf.config.experimental.set_memory_growth(gpu, True)
 
-# 1 - Remove dodgy images :
+# 1 - Building a Data Pipeline
+# Remove dodgy images :
 data_dir = 'data'
 image_exts = ['jpeg', 'jpg', 'bmp', 'png']
 
@@ -35,6 +37,57 @@ for image_class in os.listdir(data_dir):
             except Exception as e:
                 print('Issue with image {}'.format(image_path))
 
-# 2 - Load Data :
-tf.data.Dataset.list_files
+# Load Data :
+data = tf.keras.utils.image_dataset_from_directory('data')
+data_iterator = data.as_numpy_iterator()
+# get another batch from the iterator
+batch = data_iterator.next()
+# images represented as numpy arrays
+print(batch[0].shape)  # (32, 256, 256, 3)
+# Class 0 = happy people / Class 1 = sad people
+print(batch[1])  # [0 0 1 1 0 1 0 0 0 0 1 0 0 1 1 1 0 1 0 0 0 0 1 1 1 1 0 1 0 1 0 0]
+
+fig, ax = plt.subplots(ncols=4, figsize=(20, 20))
+for idx, img in enumerate(batch[0][:4]):
+    ax[idx].imshow(img)
+    ax[idx].title.set_text(batch[1][idx])
+
+# plt.tight_layout()
+# plt.show()
+
+# 2 - Preprocessing Data
+# Shuffle the dataset
+data = data.shuffle(buffer_size=len(data), reshuffle_each_iteration=False)
+
+# Scaling Images
+scaled = batch[0] / 255
+# print(scaled.max())  # 1.0
+
+data = data.map(lambda x, y: (x/255, y))
+scaled_iterator = data.as_numpy_iterator()
+batch = scaled_iterator.next()
+
+print(batch[0].max())
+fig, ax = plt.subplots(ncols=4, figsize=(20, 20))
+for idx, img in enumerate(batch[0][:4]):
+    ax[idx].imshow(img)
+    ax[idx].title.set_text(batch[1][idx])
+# plt.show()
+
+# Partitioning the Dataset
+print(len(data))  # len(data) = 9
+train_size = int(len(data)*.7)
+# print(train_size)  # 6
+val_size = int(len(data)*.2) + 1
+# print(val_size)  # 2
+test_size = int(len(data)*.1) + 1
+# print(test_size) # 1
+
+train = data.take(train_size)
+val = data.skip(train_size).take(val_size)
+test = data.skip(train_size + val_size).take(test_size)
+
+
+
+
 
