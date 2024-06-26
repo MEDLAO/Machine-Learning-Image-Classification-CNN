@@ -107,3 +107,7 @@ model.add(Dense(1, activation='sigmoid'))
 
 model.compile('adam', loss=tf.losses.BinaryCrossentropy(), metrics=['accuracy'])
 print(model.summary())
+
+# Train
+logdir = 'logs'
+tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=logdir)
