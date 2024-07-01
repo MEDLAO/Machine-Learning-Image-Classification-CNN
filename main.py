@@ -111,3 +111,4 @@ print(model.summary())
 # Train
 logdir = 'logs'
 tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=logdir)
+hist = model.fit(train, epochs=20, validation_data=val, callbacks=[tensorboard_callback])
