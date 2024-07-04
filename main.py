@@ -5,6 +5,7 @@ import imghdr
 from matplotlib import pyplot as plt
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, Dropout
+from tensorflow.keras.metrics import Precision, Recall, BinaryAccuracy
 import numpy as np
 
 
@@ -128,11 +129,30 @@ plt.plot(hist.history['loss'], color='teal', label='loss')
 plt.plot(hist.history['val_loss'], color='orange', label='val_loss')
 fig.suptitle('Loss', fontsize=20)
 plt.legend(loc="upper left")
-plt.show()
+# plt.show()
 
 fig = plt.figure()
 plt.plot(hist.history['accuracy'], color='teal', label='accuracy')
 plt.plot(hist.history['val_accuracy'], color='orange', label='val_accuracy')
 fig.suptitle('Accuracy', fontsize=20)
 plt.legend(loc="upper left")
-plt.show()
+# plt.show()
+
+# 4 - Evaluating performance
+# Evaluate
+pre = Precision()
+re = Recall()
+acc = BinaryAccuracy()
+
+print(len(test))
+
+for batch in test.as_numpy_iterator():
+    X, y = batch
+    y_hat = model.predict(X)
+    pre.update_state(y, y_hat)
+    re.update_state(y, y_hat)
+    acc.update_state(y, y_hat)
+
+print(f'Precision: {pre.result().numpy()}, Recall: {re.result().numpy()}, Accuracy: {acc.result().numpy()}')
+# Precision: 1.0, Recall: 1.0, Accuracy: 1.0
+
