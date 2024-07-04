@@ -112,3 +112,27 @@ print(model.summary())
 logdir = 'logs'
 tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=logdir)
 hist = model.fit(train, epochs=20, validation_data=val, callbacks=[tensorboard_callback])
+print(hist)
+
+# Epoch 1/20
+# 6/6 ━━━━━━━━━━━━━━━━━━━━ 7s 769ms/step - accuracy: 0.6260 - loss: 0.8251 - val_accuracy: 0.6562 - val_loss: 0.5786
+# .
+# .
+# .
+# Epoch 20/20
+# 6/6 ━━━━━━━━━━━━━━━━━━━━ 5s 798ms/step - accuracy: 1.0000 - loss: 0.0025 - val_accuracy: 1.0000 - val_loss: 0.0019
+
+# Plot performance
+fig = plt.figure()
+plt.plot(hist.history['loss'], color='teal', label='loss')
+plt.plot(hist.history['val_loss'], color='orange', label='val_loss')
+fig.suptitle('Loss', fontsize=20)
+plt.legend(loc="upper left")
+plt.show()
+
+fig = plt.figure()
+plt.plot(hist.history['accuracy'], color='teal', label='accuracy')
+plt.plot(hist.history['val_accuracy'], color='orange', label='val_accuracy')
+fig.suptitle('Accuracy', fontsize=20)
+plt.legend(loc="upper left")
+plt.show()
