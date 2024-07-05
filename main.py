@@ -156,3 +156,18 @@ for batch in test.as_numpy_iterator():
 print(f'Precision: {pre.result().numpy()}, Recall: {re.result().numpy()}, Accuracy: {acc.result().numpy()}')
 # Precision: 1.0, Recall: 1.0, Accuracy: 1.0
 
+img_test = cv2.imread('data/test/happytest.jpg')
+plt.imshow(cv2.cvtColor(img_test, cv2.COLOR_BGR2RGB))
+plt.show()
+
+resize = tf.image.resize(img_test, (256, 256))
+plt.imshow(resize.numpy().astype(int))
+plt.show()
+
+y_hat_test = model.predict(np.expand_dims(resize/255, 0))
+print(f'y_hat_test : {y_hat_test}')
+
+if y_hat_test > 0.5:
+    print(f'Predicted class is Sad')
+else:
+    print(f'Predicted class is Happy')
