@@ -6,6 +6,7 @@ from matplotlib import pyplot as plt
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, Dropout
 from tensorflow.keras.metrics import Precision, Recall, BinaryAccuracy
+from tensorflow.keras.models import load_model
 import numpy as np
 
 
@@ -80,11 +81,11 @@ for idx, img in enumerate(batch[0][:4]):
 # Partitioning the Dataset
 print(len(data))  # len(data) = 9
 train_size = int(len(data)*.7)
-# print(train_size)  # 6
+print(train_size)  # 7
 val_size = int(len(data)*.2) + 1
-# print(val_size)  # 2
+print(val_size)  # 2
 test_size = int(len(data)*.1) + 1
-# print(test_size) # 1
+print(test_size)  # 1
 
 train = data.take(train_size)
 val = data.skip(train_size).take(val_size)
@@ -147,27 +148,43 @@ acc = BinaryAccuracy()
 print(len(test))
 
 for batch in test.as_numpy_iterator():
+    print(batch)
     X, y = batch
     y_hat = model.predict(X)
+    print(y_hat)
     pre.update_state(y, y_hat)
     re.update_state(y, y_hat)
     acc.update_state(y, y_hat)
 
 print(f'Precision: {pre.result().numpy()}, Recall: {re.result().numpy()}, Accuracy: {acc.result().numpy()}')
-# Precision: 1.0, Recall: 1.0, Accuracy: 1.0
+# Precision: 0.8666666746139526, Recall: 1.0, Accuracy: 0.90625
 
-img_test = cv2.imread('data/test/happytest.jpg')
-plt.imshow(cv2.cvtColor(img_test, cv2.COLOR_BGR2RGB))
+# testing the model on new data
+img = cv2.imread('happytest.jpg')
+plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
 plt.show()
 
-resize = tf.image.resize(img_test, (256, 256))
+resize = tf.image.resize(img, (256, 256))
+print(resize.shape)
 plt.imshow(resize.numpy().astype(int))
 plt.show()
 
-y_hat_test = model.predict(np.expand_dims(resize/255, 0))
-print(f'y_hat_test : {y_hat_test}')
+print(np.expand_dims(resize, 0).shape)
+y_hat = model.predict(np.expand_dims(resize/255, 0))
+print(f'y_hat : {y_hat}')
 
-if y_hat_test > 0.5:
+if y_hat > 0.5:
+    print(f'Predicted class is Sad')
+else:
+    print(f'Predicted class is Happy')
+
+# 5 - Saving the model
+model.save(os.path.join('models', 'happysadmodel.h5'))
+new_model = load_model(os.path.join('models', 'happysadmodel.h5'))
+y_hat_new = new_model.predict(np.expand_dims(resize/255, 0))
+print(f'y_hat_new : {y_hat_new}')
+
+if y_hat_new > 0.5:
     print(f'Predicted class is Sad')
 else:
     print(f'Predicted class is Happy')

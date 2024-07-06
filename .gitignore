@@ -3,4 +3,9 @@ env/
 **/__pycache__/
 data/happy_people/*
 data/sad_people/*
+*.jpg
+data/test/*
 .DS_Store
+logs/train/*.v2
+logs/validation/*.v2
+models/happysadmodel.h5
